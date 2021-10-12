@@ -7,7 +7,7 @@ from random import randint
 pygame.init()
 pygame.font.init()
 
-FPS = 2
+FPS = 30
 screen = pygame.display.set_mode((1200, 900))
 f1 = pygame.font.Font(None, 36)
 
@@ -28,12 +28,19 @@ def new_ball():
     x = randint(100,700)
     y = randint(100,500)
     r = randint(30,50)
-    dx = randint(1, 10)
-    dy = randint(1, 10)
+    #dx = randint(1, 10)
+    #dy = randint(1, 10)
     color = COLORS[randint(0, 5)]
     circle(screen, color, (x, y), r)
 
-
+def ball():
+    global x2, y2, r2, color2
+    x2 = x
+    y2 = y
+    r2 = r
+    color2 = color
+    circle(screen, color2, (x2, y2), r2)
+    
 def click(event):
     '''returns coordinates of ball'''
     return(x, y, r)
@@ -42,7 +49,11 @@ score = 0
 pygame.display.update()
 clock = pygame.time.Clock()
 finished = False
+dx = randint(1, 10)
+dy = randint(1, 10)
 
+new_ball()
+ball()
 while not finished:
     clock.tick(FPS)
     for event in pygame.event.get():
@@ -51,16 +62,16 @@ while not finished:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             x, y, r = click(event)
             x1, y1 = event.pos
-            if ((x-x1)*(x-x1)+(y-y1)*(y-y1) <= r*r):
+            if ((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1) <= r2*r2):
                 score+=1
-                print(score)
-    new_ball()
-    x += dx
-    y += dy
-    circle(screen, color, (x, y), r)
-    if x >= (1200 - r) or x <= r:
+            
+    
+    x2 += dx
+    y2 += dy
+    circle(screen, color2, (x2, y2), r2)
+    if x2 >= (1200 - r2) or x2 <= r2:
         dx *= -1
-    if y >= (900 - r) or y <= r:
+    if y2 >= (900 - r2) or y2 <= r2:
         dy *= -1
     text1 = f1.render('Your score: '+str(score), True, (0, 200, 0))
     screen.blit(text1, (30, 50))
