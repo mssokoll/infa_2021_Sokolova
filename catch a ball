@@ -28,6 +28,8 @@ def new_ball():
     x = randint(100,700)
     y = randint(100,500)
     r = randint(30,50)
+    dx = randint(1, 10)
+    dy = randint(1, 10)
     color = COLORS[randint(0, 5)]
     circle(screen, color, (x, y), r)
 balls.append(new_ball())
@@ -52,6 +54,13 @@ while not finished:
             if ((x-x1)*(x-x1)+(y-y1)*(y-y1) <= r*r):
                 score+=1
                 print(score)
+    x += dx
+    y += dy
+    circle(screen, color, (x, y), r)
+    if x >= (1200 - r) or x <= r:
+        dx *= -1
+    if y >= (900 - r) or y <= r:
+        dy *= -1
     new_ball()
     text1 = f1.render('Your score: '+str(score), True, (0, 200, 0))
     screen.blit(text1, (30, 50))
