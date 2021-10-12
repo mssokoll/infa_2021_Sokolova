@@ -21,6 +21,7 @@ CYAN = (0, 255, 255)
 BLACK = (0, 0, 0)
 COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
 
+balls = [  ]
 def new_ball():
     '''draws new ball'''
     global x, y, r
@@ -29,9 +30,10 @@ def new_ball():
     r = randint(30,50)
     color = COLORS[randint(0, 5)]
     circle(screen, color, (x, y), r)
-    
+balls.append(new_ball())
+
 def click(event):
-    '''returns coordinates of mouse'''
+    '''returns coordinates of ball'''
     return(x, y, r)
 score = 0
 
