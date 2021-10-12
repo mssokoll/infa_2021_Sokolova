@@ -21,10 +21,10 @@ CYAN = (0, 255, 255)
 BLACK = (0, 0, 0)
 COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
 
-balls = [  ]
+
 def new_ball():
     '''draws new ball'''
-    global x, y, r
+    global x, y, r, dx, dy, color
     x = randint(100,700)
     y = randint(100,500)
     r = randint(30,50)
@@ -32,7 +32,7 @@ def new_ball():
     dy = randint(1, 10)
     color = COLORS[randint(0, 5)]
     circle(screen, color, (x, y), r)
-balls.append(new_ball())
+
 
 def click(event):
     '''returns coordinates of ball'''
@@ -54,6 +54,7 @@ while not finished:
             if ((x-x1)*(x-x1)+(y-y1)*(y-y1) <= r*r):
                 score+=1
                 print(score)
+    new_ball()
     x += dx
     y += dy
     circle(screen, color, (x, y), r)
@@ -61,7 +62,6 @@ while not finished:
         dx *= -1
     if y >= (900 - r) or y <= r:
         dy *= -1
-    new_ball()
     text1 = f1.render('Your score: '+str(score), True, (0, 200, 0))
     screen.blit(text1, (30, 50))
     pygame.display.update()
