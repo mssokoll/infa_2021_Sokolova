@@ -64,6 +64,10 @@ while not finished:
             x1, y1 = event.pos
             if ((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1) <= r2*r2):
                 score+=1
+            x2 = -100
+            y2 = -100
+            dx = 0
+            dy = 0
             
     
     x2 += dx
