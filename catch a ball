@@ -1,15 +1,13 @@
+
 import pygame
-import sys
-import numpy as np
 from pygame.draw import *
 from random import randint
-
 pygame.init()
 pygame.font.init()
 
-FPS = 30
+f1 = pygame.font.Font(None, 24)
+FPS = 1
 screen = pygame.display.set_mode((1200, 900))
-f1 = pygame.font.Font(None, 36)
 
 '''cortage of colors'''
 RED = (255, 0, 0)
@@ -20,66 +18,143 @@ MAGENTA = (255, 0, 255)
 CYAN = (0, 255, 255)
 BLACK = (0, 0, 0)
 COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
+color = COLORS[randint(0, 5)]
+SILVER = (192, 192, 192)
+GOLD = (255, 215, 0)
 
 
-def new_ball():
-    '''draws new ball'''
-    global x, y, r, dx, dy, color
+def click(event):
+    return(x, y, r)
+
+def skok(x, y, r, dx, dy):
+    '''функция отскока шарика от стены'''
+    if x >= (1200 - r) or x <= r :
+        dx *= -1
+    if y >= (900 - r) or y <= r :
+        dy *= -1
+    return(dx, dy)
+
+'''функция отскока мишени от стены''' 
+def otskok(x, y, r2, dx, dy): 
+    if x >= (1200 - r2) or x <= 0 :
+        dx *= -1
+    if y >= (900 - r2) or y <= 0 :
+        dy *= -1
+    return(dx, dy)
+    
+'''creation of superballs'''
+def superball(coopl1): 
+    x, y, r2, dx, dy, color = coopl1
+    x += dx
+    y += dy
+    circle(screen, SILVER, (x, y), r2)
+    circle(screen, GOLD, (x, y), r2//2)
+    dx, dy = otskok(x, y, r2, dx, dy)
+    coopl1 = (x, y, r2, dx, dy, color)
+    return coopl1
+  
+'''creation of balls'''  
+def ball(coopl): 
+    x, y, r, dx, dy, color = coopl
+    x += dx
+    y += dy
+    circle(screen, color, (x, y), r)
+    dx, dy = skok(x, y, r, dx, dy)
+    coopl = (x, y, r, dx, dy, color)
+    return coopl
+    
+'''superballs generation'''
+def gener_superballxy(): 
+    x = randint(100,700)
+    y = randint(100,500)
+    r2 = randint(30,50)
+    dx = randint(-10, 10)//5
+    dy = randint(-10, 10)//5
+    coopl1 = (x, y, r2, dx, dy, color)
+    return coopl1
+ 
+'''balls generation'''   
+def gener_ballxy():
     x = randint(100,700)
     y = randint(100,500)
     r = randint(30,50)
-    #dx = randint(1, 10)
-    #dy = randint(1, 10)
+    dx = randint(-10, 10)//5
+    dy = randint(-10, 10)//5
     color = COLORS[randint(0, 5)]
-    circle(screen, color, (x, y), r)
+    coopl = (x, y, r, dx, dy, color)
+    return coopl
 
-def ball():
-    global x2, y2, r2, color2
-    x2 = x
-    y2 = y
-    r2 = r
-    color2 = color
-    circle(screen, color2, (x2, y2), r2)
+def prov1(coopl1):
+    '''проверка на попадание в мишень (учитывается только "золотой" радиус)'''
+    x, y, r2, dx, dy, color = coopl1
+    x2, y2 = event.pos
+    if (x-x2)**2+(y-y2)**2<=(r2**2)//4:
+        return True
+    return False
     
-def click(event):
-    '''returns coordinates of ball'''
-    return(x, y, r)
-score = 0
+def prov(coopl):
+    '''проверка на попадание в мячик'''
+    x, y, r, dx, dy, color = coopl
+    x2, y2 = event.pos
+    if (x-x2)**2+(y-y2)**2<=r**2:
+        return True
+    return False
 
 pygame.display.update()
 clock = pygame.time.Clock()
 finished = False
-dx = randint(1, 10)
-dy = randint(1, 10)
+k=0
 
-new_ball()
-ball()
-while not finished:
-    clock.tick(FPS)
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            finished = True
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            x, y, r = click(event)
-            x1, y1 = event.pos
-            if ((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1) <= r2*r2):
-                score+=1
-            x2 = -100
-            y2 = -100
-            dx = 0
-            dy = 0
-            
+clock.tick(FPS)
+text1 = f1.render('Your score: '+str(k), True, (0,100,0))
+screen.blit(text1, (10, 50))
+pygame.display.update()
+screen.fill(BLACK)
+g = randint (1, 5)
+gb = [gener_ballxy() for i in range(g)]
+#создает g мячиков
+s = randint(1, 5)
+gsb = [gener_superballxy() for i in range(s)]
+#создает s мишеней
+
+
+
+nameuser = input("Write your name: ")
+print("So, your name is {0}. I wanna play a game with you". format(nameuser))
+my_file = open("TABLE.txt", "a+")
+my_file.write(nameuser + ' ')
+my_file.close()
     
-    x2 += dx
-    y2 += dy
-    circle(screen, color2, (x2, y2), r2)
-    if x2 >= (1200 - r2) or x2 <= r2:
-        dx *= -1
-    if y2 >= (900 - r2) or y2 <= r2:
-        dy *= -1
-    text1 = f1.render('Your score: '+str(score), True, (0, 200, 0))
-    screen.blit(text1, (30, 50))
+while True:
+    text1 = f1.render('Your score: '+str(k), True, (180,0,0))
+    screen.blit(text1, (10, 50))
     pygame.display.update()
     screen.fill(BLACK)
+    for i in range(g):
+        gb[i] = ball(gb[i])
+    for i in range (s):
+        gsb[i] = superball(gsb[i])
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                for i in range(g):
+                    if prov(gb[i]):
+                        gb[i] = (-100, -100, 1, 0, 0, (0, 0, 0))
+                        k+= 100
+                for i in range(s):
+                    if prov1(gsb[i]):
+                        gsb[i] = (-100, -100, 1, 0, 0, (0, 0, 0))
+                        k+= 250
+                        break
 
+
+    if k == 100*g+ 250*s :
+        break
+                        
+my_file = open("TABLE.txt", "a+")
+my_file.write(str(k) + "\n")
+my_file.close()        
+       
 pygame.quit()
