@@ -1,0 +1,85 @@
+#include <iostream>
+using namespace std;
+int x, y;
+int gauss  (int coord[][2], int n){
+int s = 0;
+for (int i = 0 ; i < n-1; i++)
+{
+s += coord[i][0]*coord[i + 1][1] - coord[i + 1][0]*coord[i][1];
+}
+s += coord[n - 1][0] * coord[0][1] - coord[0][0] * coord[n - 1][1];
+return abs(s / 2);
+}
+
+int main()
+{
+
+//Creating the array (I wanted to use INT_MAX, but the memory was overflowed)
+int k = 0;
+  int **p = new int* [100000000];
+  for (int j = 0; j < 100000000; j++){
+     p[j] = new int [2];
+  }
+   while (cin >> x >> y){
+       p[k][0] = x;
+       p[k][1] = y;
+       k++;
+   }
+   
+   //Creating a copy of array p for futher using
+int **copy = new int* [k];
+  for (int j = 0; j < k; j++){
+     copy[j] = new int [2];
+  }
+
+for (int i = 0; i < k; i++){
+    copy[i][0] = p[i][0];
+    copy[i][1] = p[i][1];
+}
+   
+   //Sort by x coordinate
+   for (int i = 0; i < k; i++){
+        for (int j = i + 1; j < k; j++){
+            if (p[j][0] < p[i][0]){
+                swap(p[i][0], p[j][0]);
+                swap(p[i][1], p[j][1]);
+            }
+        }
+    }
+    //Full sort of pairs vertically
+       for (int i = 0; i < k; i++){
+        for (int j = i + 1; j < k; j++){
+            if ((p[j][0] == p[i][0]) && (p[j][1] < p[i][1])){
+                swap(p[i][1], p[j][1]);
+            }
+        }
+    }
+
+//Sort by y coordinate
+   for (int i = 0; i < k; i++){
+        for (int j = i + 1; j < k; j++){
+            if (copy[j][1] < copy[i][1]){
+                swap(copy[i][0], copy[j][0]);
+                swap(copy[i][1], copy[j][1]);
+            }
+        }
+    }
+    //Full sort of pairs horizontally
+       for (int i = 0; i < k; i++){
+        for (int j = i + 1; j < k; j++){
+            if ((copy[j][1] == copy[i][1]) && (copy[j][0] < copy[i][0])){
+                swap(copy[i][0], copy[j][0]);
+            }
+        }
+    }
+    //bypass implementation
+    
+    
+for (int i = 0; i < k; i++){
+    cout << p[i][0] << ' ' << p[i][1] << endl;
+}
+for (int i = 0; i < k; i++){
+    cout << copy[i][0] << ' ' << copy[i][1] << endl;
+}
+    return 0;
+}
