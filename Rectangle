@@ -55,7 +55,7 @@ Rectangle strinrect(string str) //преобразует строку в пря�
 	string hr = str.substr(h+1, str.size()-2-h); //копирование с h+1-го элемента до правой скобки
 	con.clear();
 	int x;
-	con << hl; 
+	con << hl;
 	con >> x;
 	con.clear();
 	int y;
@@ -71,7 +71,7 @@ string kkkk(Rectangle d) //переводит прямоугольник в ст
 	string x;
 	string y;
 	con.clear();
-	con << d.a.x; 
+	con << d.a.x;
 	con >> x;
 	con.clear();
 	con << d.a.y;
@@ -88,20 +88,20 @@ int main()
 	getline(cin, ss); //По очереди считываются строки
 	while (ss.find(" ") != string::npos) // удаляем пробелы
 	{
-		ss.erase(ss.find(" "), 1); 
+		ss.erase(ss.find(" "), 1);
 	}
 	while (ss.find("*") != string::npos) // выполняем приоритетные операции и склеиваем строки обратно
 	{
 		long long int s = ss.find("*");
 		long long int i = s;
 		long long int j = s;
-		while (ss[i] != '(') i--;
-		while (ss[j] != ')') j++;
-		Rectangle d1 = strinrect(ss.substr(i, s - i));
+		while (ss[i] != '(') i--; //Поиск начала координаты х
+		while (ss[j] != ')') j++; //Поиск конца координаты у
+		Rectangle d1 = strinrect(ss.substr(i, s - i)); //Возвращает координату х (уже в виде координаты)
 		Rectangle d2 = strinrect(ss.substr(s+1, j-s));
 		Rectangle d = d1 * d2;
-		string ds = kkkk(d);
-		ss = ss.substr(0, i) + ds + ss.substr(j + 1, ss.size() - j - 1);
+		string ds = kkkk(d); //Перевод прямоугольника в строку
+		ss = ss.substr(0, i) + ds + ss.substr(j + 1, ss.size() - j - 1); //Склеивание строки из того, что получилось с помощью приоритетных операций, и всего остального
 	}
 	while (ss.find('+') != string::npos) // аналогично *, только теперь заменяем на +
 	{
@@ -119,3 +119,4 @@ int main()
 	}
 	cout << ss;
 }
+
