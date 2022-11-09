@@ -22,13 +22,13 @@ struct IntComparator final : Comparator<int>
 };
 
 // быстрая сортировка Хоара
-template <class RandomAccessIterator> // шаблонный класс итератора случайного доступа
+template <class RandomAccessIterator> // шаблонный класс итератора произвольного доступа
 void hoaraQuickSort(RandomAccessIterator first, RandomAccessIterator last, // принимаем на вход итераторы начала и конца контейнера ...
     Comparator<typename iterator_traits<RandomAccessIterator>::value_type>& comp) // ... и класс Comparator
 {
     typedef typename iterator_traits<RandomAccessIterator>::value_type value_type; // переобозначаем тип значения для краткости
 
-    auto i = first, j = last - 1; // инициализируем переменные цикла
+    auto i = first, j = last - 1; // инициализируем переменные цикла, auto используется, так как неизвестен тип, он выводится из выражения инициализации в объявлении.
     value_type x = *(first + (last - first) / 2); // значение среднего элемента
     do {
         while (comp(*i, x)) // пока i-ый элемент меньше среднего ...
