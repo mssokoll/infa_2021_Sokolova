@@ -5,6 +5,7 @@
 #include <random>
 #include <ctime>
 #include <algorithm>
+#include <cstdlib>
 using namespace std;
 
 template <typename T>
@@ -22,33 +23,34 @@ struct IntComparator final : Comparator<int>
 };
 
 // быстрая сортировка Хоара
-template <class RandomAccessIterator> // шаблонный класс итератора произвольного доступа
-void hoaraQuickSort(RandomAccessIterator first, RandomAccessIterator last, // принимаем на вход итераторы начала и конца контейнера ...
-    Comparator<typename iterator_traits<RandomAccessIterator>::value_type>& comp) // ... и класс Comparator IT Вспомогательная структура-шаблон, используется для указания всех критических определений типов, которые должен иметь итератор.
+template <typename T>
+void hoaraQuickSort(int first, int last, Comparator<T>& comp, T *buf) // принимаем на вход первый и последний элемент, компоратор
 {
-    typedef typename iterator_traits<RandomAccessIterator>::value_type value_type; // переобозначаем тип значения для краткости, RAI позволяет получить доступ к произвольному элементы диапазона по индексу
 
-    auto i = first, j = last - 1; // инициализируем переменные цикла, auto используется, так как неизвестен тип, он выводится из выражения инициализации в объявлении.
-    value_type x = *(first + (last - first) / 2); // значение среднего элемента
+    auto i = first, j = last-1; // инициализируем переменные цикла, auto используется, так как неизвестен тип, он выводится из выражения инициализации в объявлении.
+    T x = buf[(first+last)/2]; //значение среднего элемента
     do {
-        while (comp(*i, x)) // пока i-ый элемент меньше среднего ...
+
+        while (comp(buf[i], x)) // пока i-ый элемент меньше среднего ...
             ++i; // ... увеличиваем i
-        while (comp(x, *j)) // аналогично с j-ым элементом
+        while (comp(x, buf[j])) // аналогично с j-ым элементом
             --j;
 
         if (i <= j) {
-            if (comp(*j, *i)) // если i-ый и j-ый элементы неупорядочены ...
-                swap(*i, *j); // ... меняем их местами
+            if (comp(buf[j], buf[i])) // если i-ый и j-ый элементы неупорядочены ...
+                swap(buf[i], buf[j]); // ... меняем их местами
             ++i;
             --j;
         }
     } while (i <= j); // разделили две половины массива ...
 
     if (i < last - 1)
-        hoaraQuickSort(i, last, comp); // ... теперь сортируем правую половину ...
+        hoaraQuickSort(i, last, comp, buf); // ... теперь сортируем правую половину ...
     if (first < j)
-        hoaraQuickSort(first, j + 1, comp); // ... и левую
+        hoaraQuickSort(first, j + 1, comp, buf); // ... и левую
 }
+
+
 
 // очередь с приоритетом
 template <typename T>
@@ -61,7 +63,7 @@ private:
 public:
     PriorityQueue(Comparator<T>& comp) : _comp(comp) // конструктор по умолчанию, создающий пустую очередь с приоритетом
     {
-        _tree.push_back(static_cast<T>(0)); //sc осуществляет преобразование типов данных
+        _tree.push_back(T);
     }
 
     void push(T val) // метод push для добавления нового значения в очередь
@@ -70,7 +72,7 @@ public:
         sift_up(_tree.size() - 1); //элемент добавляется на то место, где он больше всех предшествующих ему
     }
 
-    T peek() // метод peek для чтения верхнего элемента очереди, но не удаления элемента, возвращает следующий символ в потоке 
+    T peek() // метод peek для чтения верхнего элемента очереди, но не удаления элемента, возвращает следующий символ в потоке
     {
         if (_tree.size() > 1)
             return _tree[1];
@@ -129,45 +131,59 @@ public:
 int main()
 {
 // тесты сортировки Хоара
-    mt19937 gen(static_cast<unsigned int>(time(nullptr))); //генератор случайных чисел
-    uniform_int_distribution<int> dist_n(10000, 20000);
-    uniform_int_distribution<int> dist(-100000, 100000);
 
-    size_t n = dist_n(gen);
-    vector<int> arr;
-    generate_n(back_inserter(arr), n, [&dist, &gen]() { return dist(gen); });
 
-    IntComparator comparator;
-    hoaraQuickSort(arr.begin(), arr.end(), comparator);
+    int n = 10000;
+    int *buf = new int[n];
+
+    for (int i = 0; i < n; i++){
+        buf[i] = rand();
+    }
+
+    IntComparator comparator = IntComparator();
+
+    hoaraQuickSort(0, n, comparator, buf);
 
     bool sorted = true;
-    for (auto i = arr.begin() + 1; i != arr.end(); ++i)
-        if (*(i - 1) > *i)
+
+    for (int i = 1; i < n; i++)
+        if (buf[i-1] > buf[i])
             sorted = false;
 
-    cout << (sorted ? "Array is sorted\n" : "Array isn't sorted\n");
+
+    if (sorted) cout << "yes";
+    else cout << "no";
+
+    delete [] buf;
+
 
 // тесты очереди с приоритетом
-    size_t n2 = dist_n(gen);
-    vector<int> arr2;
-    generate_n(back_inserter(arr2), n2, [&dist, &gen]() { return dist(gen); }); //BI добавляет значения в конец STL контейнера
+
+    vector<int> arr;
+
+    for (int i = 0; i < n; i++){
+        arr[i] = rand();
+    }
 
     PriorityQueue<int> pq(comparator);
 
-    for (auto i : arr2)
+    for (int i = 0; i < n; i++)
         pq.push(i);
 
-    for (auto& i : arr2) {
+    for (int i = 0; i < n; i++) {
         i = pq.peek();
         pq.poll();
     }
 
     pq.free();
 
-    sorted = true;
-    for (auto i = arr.begin() + 1; i != arr.end(); ++i)
-        if (*(i - 1) > *i)
-            sorted = false;
+    bool wsorted = true;
 
-    cout << (sorted ? "Array 2 is sorted\n" : "Array 2 isn't sorted\n");
+    for (int i = 1; i < n; i++)
+        if (arr[i - 1] > arr[i])
+            wsorted = false;
+
+    if (wsorted) cout << "yes";
+    else cout << "no";
+
 }
