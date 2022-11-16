@@ -61,10 +61,12 @@ private:
     Comparator<T>& _comp; // компаратор
 
 public:
-    PriorityQueue(Comparator<T>& comp) : _comp(comp) // конструктор по умолчанию, создающий пустую очередь с приоритетом
+    PriorityQueue(Comparator<T>& comp) : _comp(comp)// конструктор по умолчанию, создающий пустую очередь с приоритетом
+
     {
-        _tree.push_back(T);
+        _tree.push_back(static_cast<T>(0));
     }
+
 
     void push(T val) // метод push для добавления нового значения в очередь
     {
@@ -81,7 +83,7 @@ public:
     void poll() // метод poll для удаления верхнего элемента очереди
     {
         if (_tree.size() > 1) {
-            _tree[1] = _tree.back();
+           // _tree[1] = _tree.back();
             _tree.pop_back(); //используется для удаления последнего элемента вектора сзади и уменьшения размера вектора на 1
             sift_down(1);
         }
@@ -151,39 +153,38 @@ int main()
             sorted = false;
 
 
-    if (sorted) cout << "yes";
-    else cout << "no";
+    if (sorted) cout << "yes" << endl;
+    else cout << "no" << endl;
 
     delete [] buf;
 
 
 // тесты очереди с приоритетом
 
-    vector<int> arr;
+    int *buf1 = new int[n];
 
     for (int i = 0; i < n; i++){
-        arr[i] = rand();
+        buf1[i] = rand();
     }
 
     PriorityQueue<int> pq(comparator);
 
     for (int i = 0; i < n; i++)
-        pq.push(i);
+        pq.push(buf1[i]);
 
     for (int i = 0; i < n; i++) {
-        i = pq.peek();
+        buf1[i] = pq.peek();
         pq.poll();
     }
 
     pq.free();
 
     bool wsorted = true;
-
     for (int i = 1; i < n; i++)
-        if (arr[i - 1] > arr[i])
+        if (buf1[i-1] > buf1[i])
             wsorted = false;
 
     if (wsorted) cout << "yes";
     else cout << "no";
-
+    delete [] buf1;
 }
