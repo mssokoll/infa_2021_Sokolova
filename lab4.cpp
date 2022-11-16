@@ -150,7 +150,7 @@ int main()
 // тесты очереди с приоритетом
     size_t n2 = dist_n(gen);
     vector<int> arr2;
-    generate_n(back_inserter(arr2), n2, [&dist, &gen]() { return dist(gen); });
+    generate_n(back_inserter(arr2), n2, [&dist, &gen]() { return dist(gen); }); //BI добавляет значения в конец STL контейнера
 
     PriorityQueue<int> pq(comparator);
 
