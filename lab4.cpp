@@ -24,9 +24,9 @@ struct IntComparator final : Comparator<int>
 // быстрая сортировка Хоара
 template <class RandomAccessIterator> // шаблонный класс итератора произвольного доступа
 void hoaraQuickSort(RandomAccessIterator first, RandomAccessIterator last, // принимаем на вход итераторы начала и конца контейнера ...
-    Comparator<typename iterator_traits<RandomAccessIterator>::value_type>& comp) // ... и класс Comparator
+    Comparator<typename iterator_traits<RandomAccessIterator>::value_type>& comp) // ... и класс Comparator IT Вспомогательная структура-шаблон, используется для указания всех критических определений типов, которые должен иметь итератор.
 {
-    typedef typename iterator_traits<RandomAccessIterator>::value_type value_type; // переобозначаем тип значения для краткости
+    typedef typename iterator_traits<RandomAccessIterator>::value_type value_type; // переобозначаем тип значения для краткости, RAI позволяет получить доступ к произвольному элементы диапазона по индексу
 
     auto i = first, j = last - 1; // инициализируем переменные цикла, auto используется, так как неизвестен тип, он выводится из выражения инициализации в объявлении.
     value_type x = *(first + (last - first) / 2); // значение среднего элемента
@@ -61,16 +61,16 @@ private:
 public:
     PriorityQueue(Comparator<T>& comp) : _comp(comp) // конструктор по умолчанию, создающий пустую очередь с приоритетом
     {
-        _tree.push_back(static_cast<T>(0));
+        _tree.push_back(static_cast<T>(0)); //sc осуществляет преобразование типов данных
     }
 
     void push(T val) // метод push для добавления нового значения в очередь
     {
         _tree.push_back(val);
-        sift_up(_tree.size() - 1);
+        sift_up(_tree.size() - 1); //элемент добавляется на то место, где он больше всех предшествующих ему
     }
 
-    T peek() // метод peek для чтения верхнего элемента очереди, но не удаления элемента
+    T peek() // метод peek для чтения верхнего элемента очереди, но не удаления элемента, возвращает следующий символ в потоке 
     {
         if (_tree.size() > 1)
             return _tree[1];
@@ -80,7 +80,7 @@ public:
     {
         if (_tree.size() > 1) {
             _tree[1] = _tree.back();
-            _tree.pop_back();
+            _tree.pop_back(); //используется для удаления последнего элемента вектора сзади и уменьшения размера вектора на 1
             sift_down(1);
         }
     }
@@ -129,7 +129,7 @@ public:
 int main()
 {
 // тесты сортировки Хоара
-    mt19937 gen(static_cast<unsigned int>(time(nullptr)));
+    mt19937 gen(static_cast<unsigned int>(time(nullptr))); //генератор случайных чисел
     uniform_int_distribution<int> dist_n(10000, 20000);
     uniform_int_distribution<int> dist(-100000, 100000);
 
