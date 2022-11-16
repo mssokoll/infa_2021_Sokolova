@@ -85,7 +85,7 @@ public:
         }
     }
 
-    void sift_up(int v) // проталкивание наверх
+    void sift_up(int v) // проталкивание наверх, код из википедии
     {
         if (v == 1)
             return;
@@ -96,7 +96,7 @@ public:
         }
     }
 
-    void sift_down(int v) // проталкивание вниз
+    void sift_down(int v) // проталкивание вниз, из википедии
     {
         if (v * 2 >= _tree.size())
             return;
